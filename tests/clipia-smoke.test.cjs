@@ -63,3 +63,14 @@ test('fluxo de hospedagem protege a porta de entrada no localhost', () => {
   assert.match(compose, /BILLING_ENABLED: "0"/);
   assert.match(proxy, /proxy_pass http:\/\/backend:8000/);
 });
+
+test('GroqCloud fica configurado apenas no backend self-hosted', () => {
+  const compose = fs.readFileSync(path.join(__dirname, '..', 'deploy', 'clipia', 'docker-compose.yml'), 'utf8');
+  const envExample = fs.readFileSync(path.join(__dirname, '..', '.env.example'), 'utf8');
+  assert.match(compose, /https:\/\/api\.groq\.com\/openai\/v1/);
+  assert.match(compose, /GROQ_MODEL:-openai\/gpt-oss-120b/);
+  assert.match(compose, /GROQ_API_KEY:\?/);
+  assert.match(envExample, /GROQ_API_KEY=\s*\n/);
+  assert.match(html, /Não digite sua chave Groq/);
+  assert.doesNotMatch(js + html, /gsk_[A-Za-z0-9]{20,}/);
+});
