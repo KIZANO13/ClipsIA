@@ -13,6 +13,8 @@ A branch `main` inclui `.github/workflows/clipia-pages.yml`, que publica apenas 
 
 ## 2. Motor de IA: serviço separado, privado
 
+**Seleção de cortes via GroqCloud:** a implantação pessoal já usa o modelo `openai/gpt-oss-120b`. Configure `LLM_API_KEY` somente no `.env` privado do servidor, seguindo [CLIPSIA_GROQCLOUD.md](CLIPSIA_GROQCLOUD.md).
+
 Para processar vídeos de fato, é preciso um Linux com Docker Compose, espaço em disco e capacidade para modelos de IA. CPU pode ser lenta; GPU é opcional. Recomendação inicial: **8–12+ GB de RAM** com pelo menos **2 vCPUs**, 30+ GB disponíveis para imagens/modelos/vídeos (maior é melhor). Não há garantia de throughput nessa configuração.
 
 **Opção a avaliar:** OCI Always Free Ampere A1 permite até 2 OCPUs/12 GB RAM na franquia em certas regiões (consulte a documentação oficial, limites e disponibilidade). **Atenção:** A1 é ARM64; verifique previamente se todas as dependências binárias do OpenShorts (torch, mediapipe, etc.) suportam sua arquitetura. O upstream não foi testado por nós nessa infraestrutura. Alternativamente, use um VPS x86_64 com 8–16 GB RAM, que pode ter custo mensal.
