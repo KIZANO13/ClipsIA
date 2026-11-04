@@ -42,8 +42,24 @@ test('tokens pessoais não estão gravados nos arquivos', () => {
 });
 
 test('manifesto aponta para a página real e ícone existente', () => {
-  assert.equal(manifest.start_url, '/clipia/index.html');
-  assert.equal(manifest.scope, '/clipia/');
+  assert.equal(manifest.start_url, './index.html');
+  assert.equal(manifest.scope, './');
   assert.equal(manifest.display, 'standalone');
   assert.ok(fs.existsSync(path.join(root, 'icon.svg')));
+});
+
+
+test('prévia no GitHub Pages bloqueia envio a um backend ausente', () => {
+  assert.match(js, /IS_GITHUB_PAGES/);
+  assert.match(js, /GitHub Pages não executa vídeos com IA/);
+  assert.match(js, /state\.config = null/);
+  assert.equal(manifest.icons[0].src, './icon.svg');
+});
+
+test('fluxo de hospedagem protege a porta de entrada no localhost', () => {
+  const compose = fs.readFileSync(path.join(__dirname, '..', 'deploy', 'clipia', 'docker-compose.yml'), 'utf8');
+  const proxy = fs.readFileSync(path.join(__dirname, '..', 'deploy', 'clipia', 'nginx.conf'), 'utf8');
+  assert.match(compose, /127\.0\.0\.1:8080:80/);
+  assert.match(compose, /BILLING_ENABLED: "0"/);
+  assert.match(proxy, /proxy_pass http:\/\/backend:8000/);
 });
