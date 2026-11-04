@@ -2069,7 +2069,7 @@ def get_viral_clips(transcript_result, video_duration):
         # Self-hosted text model: no Google key needed for this stage.
         client = None
         model_name = llm_backend.model_name()
-        print(f"\U0001f916  Analyzing with local LLM at {llm_backend.base_url()} (2-pass: score → detail)...")
+        print(f"\U0001f916  Analyzing with configured LLM at {llm_backend.base_url()} (2-pass: score → detail)...")
     else:
         print("\U0001f916  Analyzing with Gemini (2-pass: score → detail)...")
         api_key = os.getenv("GEMINI_API_KEY")

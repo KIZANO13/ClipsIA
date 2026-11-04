@@ -49,7 +49,7 @@
             </div>
             <label class="toggle-row" for="captions"><span><strong>Legendas automáticas</strong><small>Geradas e inseridas nos vídeos</small></span><input id="captions" type="checkbox" checked /></label>
             <label class="toggle-row" for="auto-hook"><span><strong>Texto de abertura</strong><small>IA cria um destaque para chamar atenção</small></span><input id="auto-hook" type="checkbox" checked /></label>
-            <details class="advanced"><summary>Configuração avançada</summary><label for="gemini-key">Chave Gemini (opcional se já configurada no servidor)</label><input id="gemini-key" type="password" placeholder="Não fica salva no celular" autocomplete="off" /><p class="help">Só insira sua chave em um servidor seu, acessado por HTTPS. A chave será enviada apenas na requisição.</p></details>
+            <details class="advanced"><summary>Configuração avançada</summary><label for="gemini-key">Gemini (opcional, apenas para análise visual)</label><input id="gemini-key" type="password" placeholder="Não fica salva no celular" autocomplete="off" /><p class="help">A seleção de cortes usa o GroqCloud configurado no servidor. Não digite sua chave Groq neste campo. Uma chave Gemini é opcional para recursos visuais; use somente HTTPS privado.</p></details>
             <label class="legal-consent" for="acknowledged"><input id="acknowledged" type="checkbox" required /><span>Tenho permissão para processar este vídeo.</span></label>
             <div id="form-error" class="form-error" role="alert" hidden></div>
             <button type="submit" id="submit" class="primary" disabled><span class="btn-sparkle">✦</span> Gerar meus cortes <span aria-hidden="true">→</span></button>

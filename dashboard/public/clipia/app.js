@@ -79,7 +79,8 @@ async function checkBackend() {
       els.connection.className = 'connection bad';
       showError('Este painel funciona com o OpenShorts instalado em seu próprio servidor, com BILLING_ENABLED desativado.');
     } else {
-      els.connection.textContent = '● Servidor conectado';
+      const groqConfigured = cfg.localLlm?.baseUrl?.startsWith('https://api.groq.com/openai/v1');
+      els.connection.textContent = groqConfigured ? '● Servidor ativo · Groq configurado' : '● Servidor conectado';
       els.connection.className = 'connection ok';
     }
   } catch (_) {

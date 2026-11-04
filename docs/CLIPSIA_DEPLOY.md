@@ -25,7 +25,8 @@ Para processar vídeos de fato, é preciso um Linux com Docker Compose, espaço 
 git clone https://github.com/KIZANO13/ClipsIA.git
 cd ClipsIA
 cp .env.example .env
-# Configure pelo menos o provedor LLM conforme README upstream.
+# Edite .env NO SERVIDOR: configure GROQ_API_KEY com a chave criada em GroqCloud.
+# O Docker Compose já define endpoint e modelo GPT-OSS 120B no backend.
 # Nunca coloque chaves no GitHub, GitHub Pages ou em arquivos versionados.
 docker compose -f deploy/clipia/docker-compose.yml up -d --build
 docker compose -f deploy/clipia/docker-compose.yml ps
@@ -41,6 +42,12 @@ Esta configuração separada publica **somente 127.0.0.1:8080**, faz proxy same-
 Configure um domínio e um túnel reverso, por exemplo **Cloudflare Tunnel**, apontando para `http://localhost:8080`. **Antes de habilitar uma URL pública**, crie uma política **Cloudflare Access** que permita apenas seu login/e-mail, e configure validação de token no origin/túnel. Isto protege uploads e rotas de IA do modo self-host (que não exige login próprio). Consulte [a documentação Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/self-hosted-public-app/).
 
 Com isso, a mesma URL HTTPS protegida do servidor abrirá a interface **e** os endpoints de IA, sem problemas de CORS. O GitHub Pages permanece apenas como vitrine/prévia. No Android, use a URL privada autenticada como aplicativo real.
+
+## GroqCloud: configuração da IA
+
+O ClipsIA escolhe os cortes com **GroqCloud + GPT-OSS 120B**, usando a API OpenAI-compatible existente em `llm_backend.py`. Confira o passo a passo em **[CLIPSIA_GROQ.md](CLIPSIA_GROQ.md)**.
+
+A chave Groq deve existir exclusivamente no `.env` privado do servidor. O frontend **não recebe** essa chave. A página no GitHub Pages continua sendo apenas uma prévia sem backend.
 
 ## 3. Teste ponta a ponta
 
