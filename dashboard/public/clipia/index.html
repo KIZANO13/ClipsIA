@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0e19" />
+    <meta name="description" content="ClipsIA: transforme vídeos longos em cortes curtos usando inteligência artificial." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>ClipsIA | Cortes inteligentes</title>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="ClipsIA - início"><span class="brand-icon">✂</span><span>Clip<span class="brand-accent">IA</span></span></a>
+        <span class="edition">BETA 0.1</span>
+      </header>
+
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <span class="eyebrow"><span class="sparkle">✦</span> SEU ESTÚDIO DE CORTES COM IA</span>
+          <h1 id="page-title">Transforme um vídeo longo em <em>vários momentos incríveis.</em></h1>
+          <p>Envie um vídeo, escolha quantos cortes deseja e deixe a IA encontrar os melhores trechos para Reels, Shorts e TikTok.</p>
+          <div class="features" aria-label="Recursos"><span>◉ Legendas automáticas</span><span>▣ Vídeo vertical</span><span>✦ Melhores momentos</span></div>
+        </section>
+
+        <section class="panel" aria-labelledby="new-project-title">
+          <div class="panel-heading"><div><span class="step">01 / COMEÇAR</span><h2 id="new-project-title">Novo projeto</h2></div><span id="connection" class="connection" aria-live="polite">● Verificando servidor...</span></div>
+          <form id="clip-form" novalidate>
+            <div class="tabs" role="tablist" aria-label="Origem do vídeo">
+              <button type="button" class="tab active" id="tab-link" role="tab" aria-selected="true" aria-controls="panel-link" data-mode="url">🔗 Colar link</button>
+              <button type="button" class="tab" id="tab-file" role="tab" aria-selected="false" aria-controls="panel-file" data-mode="file">⇧ Enviar vídeo</button>
+            </div>
+            <div id="panel-link" role="tabpanel" aria-labelledby="tab-link" class="source-area">
+              <label for="video-url">Link do vídeo</label>
+              <input id="video-url" type="url" inputmode="url" autocomplete="url" placeholder="https://youtube.com/watch?v=..." />
+              <p class="help">Use links públicos de vídeos que você tem autorização para editar.</p>
+            </div>
+            <div id="panel-file" role="tabpanel" aria-labelledby="tab-file" class="source-area" hidden>
+              <label for="video-file" class="dropzone"><span class="upload-icon">⇧</span><strong id="upload-label">Escolher vídeo do celular</strong><small>MP4, MOV, WebM ou outro formato compatível com o servidor</small></label>
+              <input id="video-file" class="sr-only" type="file" accept="video/*" />
+              <p class="help">Para vídeos grandes, use uma conexão Wi-Fi estável.</p>
+            </div>
+
+            <div class="options">
+              <div class="field"><label for="clip-count">Quantidade de cortes</label><select id="clip-count"><option value="3">3 cortes</option><option value="5" selected>5 cortes</option><option value="8">8 cortes</option><option value="10">10 cortes</option><option value="15">15 cortes</option></select></div>
+              <div class="field"><label for="format">Formato de saída</label><select id="format"><option value="vertical">9:16 · Vertical</option><option value="square">1:1 · Quadrado</option><option value="horizontal">16:9 · Horizontal</option></select></div>
+            </div>
+            <label class="toggle-row" for="captions"><span><strong>Legendas automáticas</strong><small>Geradas e inseridas nos vídeos</small></span><input id="captions" type="checkbox" checked /></label>
+            <label class="toggle-row" for="auto-hook"><span><strong>Texto de abertura</strong><small>IA cria um destaque para chamar atenção</small></span><input id="auto-hook" type="checkbox" checked /></label>
+            <details class="advanced"><summary>Configuração avançada</summary><label for="gemini-key">Chave Gemini (opcional se já configurada no servidor)</label><input id="gemini-key" type="password" placeholder="Não fica salva no celular" autocomplete="off" /><p class="help">Só insira sua chave em um servidor seu, acessado por HTTPS. A chave será enviada apenas na requisição.</p></details>
+            <label class="legal-consent" for="acknowledged"><input id="acknowledged" type="checkbox" required /><span>Tenho permissão para processar este vídeo.</span></label>
+            <div id="form-error" class="form-error" role="alert" hidden></div>
+            <button type="submit" id="submit" class="primary" disabled><span class="btn-sparkle">✦</span> Gerar meus cortes <span aria-hidden="true">→</span></button>
+          </form>
+        </section>
+
+        <section id="work-section" class="panel status-panel" aria-labelledby="status-title" hidden>
+          <div class="panel-heading"><div><span class="step">02 / PROCESSAMENTO</span><h2 id="status-title">Analisando seu vídeo</h2></div><span id="job-state" class="state-pill">Na fila</span></div>
+          <p id="status-message" class="help" role="status" aria-live="polite">Preparando...</p>
+          <div class="progress-indeterminate"><span></span></div>
+          <pre id="latest-log" class="log-line" aria-label="Última etapa">O processamento pode levar alguns minutos.</pre>
+          <div id="confirm-quality" class="quality-box" hidden><strong>Resolução baixa</strong><p>A qualidade do vídeo está abaixo da recomendada. Deseja continuar mesmo assim?</p><button id="force-quality" class="secondary" type="button">Continuar assim mesmo</button></div>
+        </section>
+
+        <section id="results-section" class="results" aria-labelledby="results-title" hidden>
+          <div class="results-heading"><div><span class="step">03 / SEUS RESULTADOS</span><h2 id="results-title">Cortes prontos <span>✦</span></h2><p class="help">Ordenados pela pontuação da IA. Assista e baixe cada corte.</p></div><button id="new-project" type="button" class="secondary">+ Novo</button></div>
+          <div id="clip-list" class="clip-list"></div>
+          <a id="download-all" href="#" class="download-all" hidden>↓ Baixar todos em ZIP</a>
+        </section>
+      </main>
+      <footer><span>ClipsIA · IA para criar com liberdade</span><a href="https://github.com/mutonby/openshorts" target="_blank" rel="noopener noreferrer">Motor open source: OpenShorts</a></footer>
+    </div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

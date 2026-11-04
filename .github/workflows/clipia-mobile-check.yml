@@ -1,0 +1,32 @@
+name: ClipsIA Mobile smoke checks
+
+on:
+  pull_request:
+    paths:
+      - "dashboard/public/clipia/**"
+      - "tests/clipia-smoke.test.cjs"
+      - ".github/workflows/clipia-mobile-check.yml"
+  push:
+    paths:
+      - "dashboard/public/clipia/**"
+      - "tests/clipia-smoke.test.cjs"
+      - ".github/workflows/clipia-mobile-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check JS syntax
+        run: node --check dashboard/public/clipia/app.js
+      - name: Run smoke tests
+        run: node --test tests/clipia-smoke.test.cjs
