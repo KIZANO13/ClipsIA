@@ -1,0 +1,45 @@
+name: ClipsIA - GitHub Pages (prévia)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "dashboard/public/clipia/**"
+      - "tests/clipia-smoke.test.cjs"
+      - ".github/workflows/clipia-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "clipia-pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Validar JavaScript e testes do painel
+        run: |
+          node --check dashboard/public/clipia/app.js
+          node --test tests/clipia-smoke.test.cjs
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Enviar arquivos estáticos
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dashboard/public/clipia
+      - name: Publicar site
+        id: deployment
+        uses: actions/deploy-pages@v4

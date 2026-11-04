@@ -11,6 +11,8 @@ const els = {
   quality: $('confirm-quality'), results: $('results-section'), list: $('clip-list')
 };
 const SESSION_KEY = 'clipsia_job_v1';
+// GitHub Pages can serve the interface only; never POST videos to github.io.
+const IS_GITHUB_PAGES = window.location.hostname.toLowerCase().endsWith('.github.io');
 
 function showError(message) { els.error.textContent = message; els.error.hidden = !message; }
 function humanError(value) {
@@ -61,6 +63,14 @@ async function request(path, options = {}) {
   return response.json();
 }
 async function checkBackend() {
+  if (IS_GITHUB_PAGES) {
+    state.config = null;
+    els.connection.textContent = '● Prévia online — IA pendente';
+    els.connection.className = 'connection';
+    showError('A interface já está publicada, mas o GitHub Pages não executa vídeos com IA. Para gerar cortes, precisamos de um servidor privado com HTTPS. Consulte o guia de implantação no GitHub.');
+    updateSubmit();
+    return;
+  }
   try {
     const cfg = await request('/api/config');
     state.config = cfg;

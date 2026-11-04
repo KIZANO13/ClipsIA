@@ -21,6 +21,12 @@ Interface em português, mobile-first, construída sobre o **núcleo self-hosted
 
 O motor de IA e o renderizador continuam sendo os componentes originais do OpenShorts: este projeto **não processa vídeo dentro do Android**.
 
+## Publicação pelo celular
+
+A **prévia pública** pode ser publicada pelo GitHub Pages em `https://kizano13.github.io/ClipsIA/`, após ativar **Settings → Pages → Source: GitHub Actions**. Nessa modalidade o motor de IA não está conectado e a geração permanece desabilitada.
+
+Para **gerar vídeos de verdade** em um servidor privado (com HTTPS + autenticação), use o guia **[CLIPSIA_DEPLOY.md](CLIPSIA_DEPLOY.md)** e `deploy/clipia/docker-compose.yml`.
+
 ## Como testar localmente
 
 **Requisitos:** Docker + Compose, capacidade de CPU/RAM para Whisper/FFmpeg e uma chave Gemini ou LLM OpenAI-compatível para o selecionador de cortes. Para o fluxo padrão, o OpenShorts permite fornecer a chave Gemini no próprio formulário (apenas em um servidor seu, sob HTTPS) ou configurar o provedor de IA conforme o README upstream.
