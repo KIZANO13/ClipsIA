@@ -50,6 +50,17 @@ def check_response(raw: bytes) -> bool:
     return structured.get("ok") is True
 
 
+def safe_permission_code(error: HTTPError) -> str | None:
+    """Show only allowlisted permission codes, never an untrusted error body."""
+    allowed = {"model_permission_blocked_org", "model_permission_blocked_project"}
+    try:
+        body = json.loads(error.read(4096))
+        code = (body.get("error") or {}).get("code")
+        return code if isinstance(code, str) and code in allowed else None
+    except (ValueError, AttributeError, TypeError, OSError):
+        return None
+
+
 def main() -> int:
     key = os.getenv("GROQ_API_KEY", "").strip()
     if not key:
@@ -60,13 +71,19 @@ def main() -> int:
         with urlopen(build_request(key, model), timeout=45) as response:
             ok = check_response(response.read())
     except HTTPError as error:
-        reason = {
-            400: "requisição rejeitada; confira o modelo",
-            401: "chave inválida ou revogada",
-            403: "acesso ao modelo negado",
-            404: "modelo ou endpoint indisponível",
-            429: "limite gratuito de uso atingido; confira sua cota",
-        }.get(error.code, "requisição não concluída")
+        code = safe_permission_code(error)
+        if code == "model_permission_blocked_org":
+            reason = "modelo bloqueado pela organização; verifique Settings > Organization > Limits"
+        elif code == "model_permission_blocked_project":
+            reason = "modelo bloqueado pelo projeto; verifique Settings > Projects > Limits"
+        else:
+            reason = {
+                400: "requisição rejeitada; confira o modelo",
+                401: "chave inválida ou revogada",
+                403: "acesso proibido; confira as permissões da organização e do projeto",
+                404: "modelo ou endpoint indisponível",
+                429: "limite gratuito de uso atingido; confira sua cota",
+            }.get(error.code, "requisição não concluída")
         print(f"GroqCloud retornou HTTP {error.code}: {reason}.")
         return 1
     except (URLError, TimeoutError):

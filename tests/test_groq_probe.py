@@ -52,6 +52,39 @@ class TestGroqProbe(unittest.TestCase):
             with patch.object(probe_groq, "urlopen", return_value=FakeResponse(payload)):
                 self.assertEqual(probe_groq.main(), 0)
 
+    def test_403_org_model_block_is_safe(self):
+        import io
+        from contextlib import redirect_stdout
+        secret = "gsk_fake_secret"
+        body = json.dumps({"error": {
+            "code": "model_permission_blocked_org",
+            "message": f"test secret {secret} must not be printed",
+        }}).encode()
+        output = io.StringIO()
+        with patch.dict(os.environ, {"GROQ_API_KEY": secret}):
+            with patch.object(probe_groq, "urlopen", side_effect=HTTPError(
+                probe_groq.API_URL, 403, "Forbidden", {}, io.BytesIO(body)
+            )):
+                with redirect_stdout(output):
+                    self.assertEqual(probe_groq.main(), 1)
+        self.assertIn("bloqueado pela organização", output.getvalue())
+        self.assertNotIn(secret, output.getvalue())
+
+    def test_403_project_model_block_is_safe(self):
+        import io
+        from contextlib import redirect_stdout
+        body = json.dumps({"error": {
+            "code": "model_permission_blocked_project",
+        }}).encode()
+        output = io.StringIO()
+        with patch.dict(os.environ, {"GROQ_API_KEY": "gsk_fake_secret"}):
+            with patch.object(probe_groq, "urlopen", side_effect=HTTPError(
+                probe_groq.API_URL, 403, "Forbidden", {}, io.BytesIO(body)
+            )):
+                with redirect_stdout(output):
+                    self.assertEqual(probe_groq.main(), 1)
+        self.assertIn("bloqueado pelo projeto", output.getvalue())
+
     def test_http_429_is_handled_without_printing_token(self):
         with patch.dict(os.environ, {"GROQ_API_KEY": "gsk_fake_secret"}):
             with patch.object(probe_groq, "urlopen", side_effect=HTTPError(

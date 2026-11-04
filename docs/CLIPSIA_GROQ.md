@@ -24,6 +24,14 @@ Se você **já criou a chave** e está usando somente o Android:
 5. Abra [Actions → ClipsIA - Testar GroqCloud](https://github.com/KIZANO13/ClipsIA/actions/workflows/clipia-groq-check.yml), clique em **Run workflow**, escolha **main** e confirme.
 6. Aguarde a execução: **verde** significa que a Groq respondeu ao teste de JSON, **vermelho** indica falta de chave, erro de rede, credenciais, modelo ou cota.
 
+### Se o teste retornar HTTP 403
+
+A Groq informa que **modelos bloqueados pela organização ou pelo projeto** podem retornar HTTP 403. Confira as permissões do modelo `openai/gpt-oss-120b` no [painel de limites da organização](https://console.groq.com/settings/limits) e nas [permissões do projeto](https://console.groq.com/settings/project/limits). Ative-o somente se você tiver permissão para isso. Veja [Model Permissions](https://console.groq.com/docs/model-permissions).
+
+Se não conseguir habilitar o GPT-OSS 120B, execute novamente **ClipsIA - Testar GroqCloud**, escolhendo `openai/gpt-oss-20b` no campo **model** antes de clicar em Run workflow. Se o modelo de 20B passar, ajuste `GROQ_MODEL=openai/gpt-oss-20b` no `.env` **privado do servidor** quando formos configurá-lo. O teste não muda automaticamente o modelo do servidor.
+
+O diagnóstico distingue alguns códigos de bloqueio fornecidos pela Groq sem imprimir respostas brutas ou credenciais. **403 genérico não prova, sozinho, qual configuração está bloqueando o acesso.**
+
 O teste realiza **uma pequena chamada de texto à Groq**; ele **não envia vídeo** e **não cria cortes MP4**. A chamada consome uma parte da cota gratuita. A chave é injetada somente durante a execução manual do workflow; o código não imprime cabeçalhos nem a resposta bruta. Apenas pessoas com permissão de escrita no repositório devem poder alterar workflows que usam segredos.
 
 **Importante:** configurar o segredo no GitHub Actions **não configura o Docker** automaticamente. Quando tivermos um servidor, será necessário preencher `GROQ_API_KEY` também no `.env` privado **do servidor**, ou usar um mecanismo seguro de injeção de segredos. A chave nunca deve ser colocada em código público.
