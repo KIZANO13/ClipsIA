@@ -14,7 +14,14 @@ services:
       WHISPER_COMPUTE: int8
       WHISPER_MODEL: small
       FFMPEG_THREADS: "2"
-    volumes:
+      # ClipsIA: seleção de momentos com GroqCloud (chave só no .env privado).
+      LLM_PROVIDER: "openai"
+      LLM_BASE_URL: "https://api.groq.com/openai/v1"
+      LLM_MODEL: "${GROQ_MODEL:-openai/gpt-oss-120b}"
+      LLM_API_KEY: "${GROQ_API_KEY:?Configure GROQ_API_KEY no arquivo .env privado antes de iniciar}"
+      LLM_SCORE_BATCH: "3"
+      LLM_TIMEOUT: "120"
+      volumes:
       - outputs:/app/output
       - uploads:/app/uploads
       - hf_cache:/app/.cache/huggingface
