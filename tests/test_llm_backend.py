@@ -120,6 +120,46 @@ def test_server_errors_surface_with_status_and_url(local, monkeypatch):
     assert "503" in str(exc.value) and "loading model" in str(exc.value)
 
 
+
+def test_groqcloud_gpt_oss_120b_works_via_mock_api(monkeypatch):
+    """Groq uses the existing OpenAI-compatible chat endpoint, not a new SDK."""
+    monkeypatch.setenv("LLM_PROVIDER", "openai")
+    monkeypatch.setenv("LLM_BASE_URL", "https://api.groq.com/openai/v1")
+    monkeypatch.setenv("LLM_MODEL", "openai/gpt-oss-120b")
+    monkeypatch.setenv("LLM_API_KEY", "gsk_unit_test_only")
+    captured = {}
+
+    def handler(request):
+        captured["url"] = str(request.url)
+        captured["authorization"] = request.headers.get("authorization")
+        captured["payload"] = json.loads(request.content)
+        return _completion({"windows": []})
+
+    _serve(handler, monkeypatch)
+    result, _ = llm_backend.generate_json("selecione momentos", gemini_worker.ScoreResponse)
+
+    assert captured["url"] == "https://api.groq.com/openai/v1/chat/completions"
+    assert captured["authorization"] == "Bearer gsk_unit_test_only"
+    assert captured["payload"]["model"] == "openai/gpt-oss-120b"
+    assert captured["payload"]["response_format"]["type"] == "json_schema"
+    assert result == {"windows": []}
+
+
+def test_groqcloud_429_surfaces_limit_instead_of_hiding_it(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "openai")
+    monkeypatch.setenv("LLM_BASE_URL", "https://api.groq.com/openai/v1")
+    monkeypatch.setenv("LLM_MODEL", "openai/gpt-oss-120b")
+    monkeypatch.setenv("LLM_API_KEY", "gsk_unit_test_only")
+
+    _serve(lambda request: httpx.Response(429, json={
+        "error": {"message": "Rate limit reached", "type": "rate_limit"}
+    }), monkeypatch)
+    with pytest.raises(RuntimeError) as exc:
+        llm_backend.generate_json("selecione momentos", gemini_worker.ScoreResponse)
+    assert "429" in str(exc.value)
+    assert "Rate limit" in str(exc.value)
+
+
 # --- main.py routing (needs the heavy deps; skipped on minimal CI) ------------
 
 def test_stage_routes_to_local_backend_and_retries_transient(local, monkeypatch):
