@@ -1,0 +1,25 @@
+name: ClipsIA - Testar GroqCloud
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-groq:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Testes locais sem rede
+        run: python -m unittest discover -s tests -p test_groq_probe.py -v
+      - name: Consultar GroqCloud com chave segura
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_MODEL: openai/gpt-oss-120b
+        run: python scripts/probe_groq.py
