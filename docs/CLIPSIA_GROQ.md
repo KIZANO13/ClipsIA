@@ -13,6 +13,21 @@ O ClipsIA usa o **GroqCloud GPT-OSS 120B** para ler a **transcrição** do víde
 
 O nível gratuito está sujeito a limites de tokens/requisições, que variam por modelo e organização. Consulte https://console.groq.com/docs/rate-limits e a página **Limits** da sua conta. Se atingir 429, reduza o número/tamanho de vídeos e tente após a janela de cota; não tente contornar limites com múltiplas contas.
 
+## Testar sua chave no GitHub Actions (antes de contratar um servidor)
+
+Se você **já criou a chave** e está usando somente o Android:
+
+1. Abra [Settings → Secrets and variables → Actions](https://github.com/KIZANO13/ClipsIA/settings/secrets/actions) no repositório **KIZANO13/ClipsIA**. Em telas pequenas, use **Site para computador** no navegador, se necessário.
+2. Selecione **New repository secret**.
+3. Em **Name**, escreva exatamente **`GROQ_API_KEY`**.
+4. Em **Secret**, cole a chave diretamente no formulário **privado do GitHub** e salve. **Nunca coloque a chave em README, conversa, .env.example ou comentário de PR.**
+5. Abra [Actions → ClipsIA - Testar GroqCloud](https://github.com/KIZANO13/ClipsIA/actions/workflows/clipia-groq-check.yml), clique em **Run workflow**, escolha **main** e confirme.
+6. Aguarde a execução: **verde** significa que a Groq respondeu ao teste de JSON, **vermelho** indica falta de chave, erro de rede, credenciais, modelo ou cota.
+
+O teste realiza **uma pequena chamada de texto à Groq**; ele **não envia vídeo** e **não cria cortes MP4**. A chamada consome uma parte da cota gratuita. A chave é injetada somente durante a execução manual do workflow; o código não imprime cabeçalhos nem a resposta bruta. Apenas pessoas com permissão de escrita no repositório devem poder alterar workflows que usam segredos.
+
+**Importante:** configurar o segredo no GitHub Actions **não configura o Docker** automaticamente. Quando tivermos um servidor, será necessário preencher `GROQ_API_KEY` também no `.env` privado **do servidor**, ou usar um mecanismo seguro de injeção de segredos. A chave nunca deve ser colocada em código público.
+
 ## Configurar no servidor Linux privado
 
 Abra a pasta do repositório no servidor:
