@@ -1,0 +1,13 @@
+RewriteEngine On
+RewriteBase /
+
+Options -Indexes
+RewriteRule ^(?:channels|libs|sessions|videos|HeadlessVidX)/ - [F,L,NC]
+RewriteRule \.(?:dat|log|json|txt|md|zip|bak)$ - [F,L,NC]
+RewriteRule ^(?:config|generate_live_playlist|create_playlist|create_tv_playlist|create_adult_playlist)\.php$ - [F,L,NC]
+
+RewriteRule ^live/([^/]+)/([^/]+)/([0-9]+)\.(?:m3u8|ts)$ live_play.php?username=$1&password=$2&streamId=$3 [QSA,L,NC]
+RewriteRule ^tv\.m3u8$ player_api.php?action=get_live_streams&type=m3u8 [QSA,L,NC]
+RewriteRule ^movies\.m3u8$ player_api.php?action=get_vod_streams&type=m3u8 [QSA,L,NC]
+RewriteRule ^movie/([^/]+)/([^/]+)/([0-9]+)(?:\.[a-z0-9]+)?$ play.php?username=$1&password=$2&movieId=$3 [QSA,L,NC]
+RewriteRule ^series/([^/]+)/([^/]+)/([0-9]+)\.([a-z0-9]+)$ play.php?username=$1&password=$2&type=series&movieId=$3&data=$4 [QSA,L,NC]
